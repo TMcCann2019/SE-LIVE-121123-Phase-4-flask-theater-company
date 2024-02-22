@@ -41,8 +41,8 @@ class Productions(Resource):
 
     def post(self):
         new_production = Production(
-            title=request.get_json()m["title"],
-            genre=request.get_json()m["genre"],
+            title=request.get_json()["title"],
+            genre=request.get_json()["genre"],
             budget=int(request.get_json()["budget"]),
             image=request.get_json()["image"],
             director=request.get_json()["director"],
