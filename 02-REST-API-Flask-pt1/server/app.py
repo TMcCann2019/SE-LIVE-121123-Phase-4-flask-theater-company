@@ -46,6 +46,12 @@ class Productions(Resource):
         #     "description": production.description,
         #     "ongoing": production.ongoing
         # } for production in Production.query.all()]
+        
+        # 10.✅ User our serializer to format our response to be cleaner
+        # 10.1 Query all of the productions, convert them to a dictionary with to_dict and set them to a list.
+        # 10.2 Invoke make_response, pass it the production list and a status of 200. Set make_response to a response variable.
+        # 10.3 return the response variable
+        # 10.4 After building the route run the server and test it in the browser
         productions_list = [production.to_dict() for production in Production.query.all()]
 
 # 4.4 Create a response variable and set it to:
@@ -59,12 +65,6 @@ class Productions(Resource):
 # 5.✅ Serialization
 # This is great, but there's a cleaner way to do this with Serialization that will allow us to easily add our associations as well.
 # Navigate to models.py for Steps 6 - 9
-
-# 10.✅ User our serializer to format our response to be cleaner
-# 10.1 Query all of the productions, convert them to a dictionary with to_dict and set them to a list.
-# 10.2 Invoke make_response, pass it the production list and a status of 200. Set make_response to a response variable.
-# 10.3 return the response variable
-# 10.4 After building the route run the server and test it in the browser
 
 # 11.✅ Create a POST route
 # Prepare a POST request in Postman under the Body tab select form-data and fill out the body of a production request.

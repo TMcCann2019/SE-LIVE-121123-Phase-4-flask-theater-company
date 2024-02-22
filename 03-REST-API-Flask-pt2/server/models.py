@@ -3,7 +3,6 @@ from sqlalchemy_serializer import SerializerMixin
 
 db = SQLAlchemy()
 
-
 class Production(db.Model, SerializerMixin):
     __tablename__ = "productions"
 
@@ -24,7 +23,6 @@ class Production(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Production Title:{self.title}, Genre:{self.genre}, Budget:{self.budget}, Image:{self.image}, Director:{self.director},ongoing:{self.ongoing}>"
 
-
 class CastMember(db.Model, SerializerMixin):
     __tablename__ = "cast_members"
 
@@ -39,4 +37,4 @@ class CastMember(db.Model, SerializerMixin):
     serialize_rules = ("-production.cast_members",)
 
     def __repr__(self):
-        return f"<Production Name:{self.name}, Role:{self.role}>"
+        return f"<CastMember Name:{self.name}, Role:{self.role}>"
