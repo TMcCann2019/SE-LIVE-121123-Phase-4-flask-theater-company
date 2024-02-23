@@ -27,8 +27,10 @@ from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from models import Actor, CastMember, Production, db
 from werkzeug.exceptions import NotFound
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = True
@@ -39,7 +41,6 @@ db.init_app(app)
 
 Api.error_router = lambda self, handler, e: handler(e)
 api = Api(app)
-
 
 class Productions(Resource):
     def get(self):
@@ -54,14 +55,19 @@ class Productions(Resource):
     def post(self):
         form_json = request.get_json()
         # 4.✅ Add a try except, try to create a new production. If a ValueError is raised call abort with a 422 and pass it the validation errors.
-        new_production = Production(
-            title=form_json["title"],
-            genre=form_json["genre"],
-            budget=int(form_json["budget"]),
-            image=form_json["image"],
-            director=form_json["director"],
-            description=form_json["description"],
-        )
+        try:
+            new_production = Production(
+                title=form_json["title"],
+                genre=form_json["genre"],
+                budget=int(form_json["budget"]),
+                image=form_json["image"],
+                director=form_json["director"],
+                description=form_json["description"],
+            )
+        except ValueError as e:
+            abort(422, e.args[0])
+        except Exception as e:
+            abort(500, e.args[0])
 
         db.session.add(new_production)
         db.session.commit()
@@ -73,7 +79,6 @@ class Productions(Resource):
             201,
         )
         return response
-
 
 class ProductionByID(Resource):
     def get(self, id):
@@ -115,7 +120,6 @@ class ProductionByID(Resource):
 
         return response
 
-
 class CastMembers(Resource):
     def get(self):
         cast_members_list = [
@@ -139,7 +143,6 @@ class CastMembers(Resource):
 
         response = make_response(response_dict, 201)
         return response
-
 
 #'/cast_members/<int:id>'
 class CastMembersByID(Resource):
@@ -182,12 +185,10 @@ class CastMembersByID(Resource):
 
         return response
 
-
 api.add_resource(Productions, "/productions")
 api.add_resource(ProductionByID, "/productions/<int:id>")
 api.add_resource(CastMembers, "/cast_members")
 api.add_resource(CastMembersByID, "/cast_members/<int:id>")
-
 
 @app.errorhandler(NotFound)
 def handle_not_found(e):
@@ -197,7 +198,6 @@ def handle_not_found(e):
     )
 
     return response
-
 
 # To run the file as a script
 if __name__ == "__main__":

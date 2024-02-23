@@ -2,7 +2,7 @@ import  {useParams, useHistory } from 'react-router-dom'
 import {useEffect, useState} from 'react'
 import styled from 'styled-components'
 
-function ProductionDetail() {
+function ProductionDetail(handleEdit) {
   const [production, setProduction] = useState({cast_members:[]})
   const [error, setError] = useState(null)
   
@@ -40,7 +40,7 @@ function ProductionDetail() {
             </div>
             <img src={image}/>
           </div>
-      <button >Buy Ticket</button>
+      <button onClick={() => handleEdit(production)}>Edit Production</button>
       </CardDetail>
     )
   }

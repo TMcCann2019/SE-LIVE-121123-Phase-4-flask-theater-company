@@ -5,12 +5,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 # 1.✅ Import validates from sqlalchemy.orm
 from sqlalchemy_serializer import SerializerMixin
+from sqlalchemy.orm import validates
 
-# import association_proxy from sqlalchemy.orm.associationproxy
-
+# import association_proxy from sqlalchemy.ext.associationproxy
+from sqlalchemy.ext.associationproxy import association_proxy
 
 db = SQLAlchemy()
-
 
 class Production(db.Model, SerializerMixin):
     __tablename__ = "productions"
@@ -19,8 +19,8 @@ class Production(db.Model, SerializerMixin):
 
     # 2.✅ Add Constraints to the Columns
 
-    title = db.Column(db.String)
-    genre = db.Column(db.String)
+    title = db.Column(db.String, unique=True, nullable=False)
+    genre = db.Column(db.String, nullable=False)
     budget = db.Column(db.Float)
     image = db.Column(db.String)
     director = db.Column(db.String)
@@ -33,9 +33,13 @@ class Production(db.Model, SerializerMixin):
         "CastMember", back_populates="production", cascade="all, delete"
     )
     # create many-to-many association with actors
-    # actors = association_proxy("cast_members", "actor")
+    actors = association_proxy("cast_members", "actor")
 
-    serialize_rules = ("-cast_members.production",)
+    serialize_rules = (
+        "-cast_members.actor",
+        "-cast_members.production",
+        "-actors.cast_members",
+    )
 
     # 3.✅ Use the "validates" decorator to create a validation for images
     # 3.1 Pass the decorator 'image'
@@ -43,12 +47,16 @@ class Production(db.Model, SerializerMixin):
     # 3.3 If .jpg is not in the image passed, raise the ValueError exceptions else
     # return the image_path
     # Note: Feel free to try out more validations!
-
+    @validates("image")
+    def validate_image(self, key, image_path):
+        if not image_path.endswith(".jpg"): #if ".jpg" not in image_path:
+            raise ValueError("Image must be a.jpg file")
+        return image_path
+    
     # 4.✅ navigate to app.py
 
     def __repr__(self):
         return f"<Production Title:{self.title}, Genre:{self.genre}, Budget:{self.budget}, Image:{self.image}, Director:{self.director},ongoing:{self.ongoing}>"
-
 
 class Actor(db.Model, SerializerMixin):
     __tablename__ = "actors"
@@ -63,6 +71,7 @@ class Actor(db.Model, SerializerMixin):
         "CastMember", back_populates="actor", cascade="all, delete"
     )
     # create many-to-many association with productions
+    productions = association_proxy("cast_members", "production")
 
     serialize_rules = (
         "-cast_members.actor",
@@ -71,7 +80,6 @@ class Actor(db.Model, SerializerMixin):
 
     def __repr__(self):
         return f"<Actor id: {self.id} | Name: {self.name}>"
-
 
 class CastMember(db.Model, SerializerMixin):
     __tablename__ = "cast_members"

@@ -18,8 +18,14 @@ function App() {
   //5.✅ GET Productions
   // 5.1 Invoke the useEffect() hook
   // 5.2 Build a fetch request to '/productions'
-    // Note: The proxy in package.json has been set to "http://localhost:5000"
-    // This will allow us to proxy our api requests  
+    // Note: The proxy in package.json has been set to "http://localhost:5555"
+    // This will allow us to proxy our api requests
+    useEffect(() => {
+      fetch('/productions')
+        .then(resp => resp.json())
+        .then(setProductions)
+    }, [])
+     
   // 5.3 When productions return set the productions to state
   // 6.✅ navigate to client/src/components/ProductionForm.js
 
@@ -71,4 +77,3 @@ const GlobalStyle = createGlobalStyle`
       color:white;
     }
     `
-
