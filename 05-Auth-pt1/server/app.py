@@ -33,7 +33,7 @@ app.json.compact = False
 # Set up:
 # generate a secrete key `python -c 'import os; print(os.urandom(16))'`
 
-app.secret_key = "Secret Key Here!"
+app.secret_key = b'\x82Jx\xb3\xf0\x11\xedk0R\xa9\x8c\x88\x7f\xc3\xe6'
 
 migrate = Migrate(app, db)
 db.init_app(app)
@@ -133,6 +133,19 @@ api.add_resource(ProductionByID, "/productions/<int:id>")
 # 1.3.3 add and commit the new user
 # 1.3.4 Save the new users id to the session hash
 # 1.3.5 Make a response and send it back to the client
+class Users(Resource):
+    def post(self):
+        req_json = request.get_json()
+        try:
+            new_user = User(**req_json)
+        except:
+            abort(422, "Invalid User")
+        db.session.add(new_user)
+        db.session.commit()
+        session["user_id"] = new_user.id
+        return make_response(new_user.to_dict(), 201)
+
+api.add_resource(Users, "/users", "/signup") #the /signup route is an alias and convention used for signups etc. This is for signing up users, not used for signing in or signing out for users which is different
 
 # 2.✅ Test this route in the client/src/components/Authentication.sj
 
@@ -145,7 +158,13 @@ api.add_resource(ProductionByID, "/productions/<int:id>")
 # 3.3.3 If found set the user_id to the session hash
 # 3.3.4 convert the user to_dict and send a response back to the client
 # 3.4 Toggle the signup form to login and test the login route
-
+@app.route('/login', methods = ['POST'])
+def login():
+    user = User.query.filter_by(name=request.get_json()["name"]).first()
+    if not user:
+        abort(404, "User not found")
+    session["user_id"] = user.id
+    return make_response(user.to_dict(), 200)
 
 # 4.✅ Create an AuthorizedSession class that inherits from Resource
 # 4.1 use api.add_resource to add an authorized route
@@ -153,6 +172,12 @@ api.add_resource(ProductionByID, "/productions/<int:id>")
 # 4.2.1 Access the user_id from session with session.get
 # 4.2.2 Use the user id to query the user with a .filter
 # 4.2.3 If the user id is in sessions and found make a response to send to the client. else raise the Unauthorized exception (Note- Unauthorized is being imported from werkzeug.exceptions)
+@app.route("/authorized")
+def authorized():
+    user = User.query.filter_by(id = session.get("user_id")).first()
+    if not user:
+        abort(401, "User is unauthorized")
+    return make_response(user.to_dict(), 200)
 
 # 5.✅ Head back to client/src/App.js to restrict access to our app!
 
@@ -172,7 +197,15 @@ api.add_resource(ProductionByID, "/productions/<int:id>")
 # 8.4 Set the cookies in the response with set_cookie and pass it a key 'mode' and a value 'dark'
 # 8.5 return the response, run the server and check the response in the browser.
 # Note: Now is a great time to view the cookies and talk about security concerns
-
+@app.route("/dark_mode")
+def dark_mode():
+    response = make_response(
+        {"cookies": [{cookie: request.cookies[cookie] for cookie in request.cookies}]},
+        200
+    )
+    response.set_cookie("password", "pa$$w0rd")
+    response.set_cookie("mode", "dark")
+    return response
 
 @app.errorhandler(NotFound)
 def handle_not_found(e):

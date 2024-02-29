@@ -19,24 +19,57 @@ function Authentication({updateUser}) {
       // Complete the post and test our '/users' route 
     // 3.4 On a successful POST add the user to state (updateUser is passed down from app through props) and redirect to the Home page.
   // 4.✅ return to server/app.py to build the next route
+
+    const formSchema = yup.object.shape({
+      name: yup.string().required("Please enter your name"),
+      email: yup.string().email("Please enter a valid email")
+    })
+
+    const formik = useFormik({
+      initialValues: {
+        name : "",
+        email : ""
+      },
+      validationSchema: formSchema,
+      onSubmit: (values) => {
+        fetch(signUp ? '/singup' : '/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(values, null, 2),
+        })
+        .then((res) => {
+          if (res.ok){
+            res.json().then(user => {
+              updateUser(user)
+              history.push('/')
+            })
+          } else {
+            updateUser(null)
+            history.push('/authentication')
+          }
+        })
+      }
+    })
  
     return (
         <> 
-        <h2 style={{color:'red'}}> {'Errors Here!!'}</h2>
+        {formik.errors && Object.values(formik.errors).map((error) => <h2 style = {{color: 'red'}}> {error}</h2>)}
         <h2>Please Log in or Sign up!</h2>
         <h2>{signUp?'Already a member?':'Not a member?'}</h2>
         <button onClick={handleClick}>{signUp?'Log In!':'Register now!'}</button>
-        <Form onSubmit={console.log}>
+        <Form onSubmit={formik.handleSubmit}>
         <label>
           Username
           </label>
-        <input type='text' name='name' value={'value'} onChange={console.log} />
+        <input type='text' name='name' value={'value'} onChange={formik.handleChange} />
         {signUp&&(
           <>
           <label>
           Email
           </label>
-          <input type='text' name='email' value={'value'} onChange={console.log} />
+          <input type='text' name='email' value={'value'} onChange={formik.handleChange} />
           </>
         )}
         <input type='submit' value={signUp?'Sign Up!':'Log In!'} />
