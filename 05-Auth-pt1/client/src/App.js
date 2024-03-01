@@ -45,7 +45,7 @@ function App() {
  
   const addProduction = (production) => setProductions(current => [...current,production])
   const updateProduction = (updated_production) => setProductions(productions => productions.map(production => production.id == updated_production.id? updated_production : production))
-  const deleteProduction = (deleted_production) => setProductions(productions => productions.filter((production) => production.id !== deleted_production.id) )
+  const deleteProduction = (deleted_production) => setProductions(productions => productions.filter((production) => production.id !== deleted_production.id))
   const handleEdit = (production) => {
     setProductionEdit(production)
     history.push(`/productions/edit/${production.id}`)

@@ -7,16 +7,12 @@
      #Rainbow Tables
    # Bcrypt
 
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import validates
 from sqlalchemy.ext.hybrid import hybrid_property
 
 # 3.✅ Import bcyrpt from app
-
-
-db = SQLAlchemy(engine_options={"echo": True})
-
+from config import bcrypt, db
 class Production(db.Model, SerializerMixin):
     __tablename__ = 'productions'
     
@@ -24,8 +20,7 @@ class Production(db.Model, SerializerMixin):
         db.CheckConstraint('budget > 100'),
     )
 
-    id = db.Column(db.Integer, primary_key=True)
-      
+    id = db.Column(db.Integer, primary_key=True)  
     title = db.Column(db.String, nullable=False)
     genre = db.Column(db.String, nullable=False)
     budget = db.Column(db.Float)
@@ -44,7 +39,6 @@ class Production(db.Model, SerializerMixin):
         if '.jpg' not in image_path:
             raise ValueError("Image file type must be a jpg")
         return image_path
-    
 
     def __repr__(self):
         return f'<Production Title:{self.title}, Genre:{self.genre}, Budget:{self.budget}, Image:{self.image}, Director:{self.director},ongoing:{self.ongoing}>'
@@ -64,7 +58,6 @@ class CastMember(db.Model, SerializerMixin):
     def __repr__(self):
         return f'<Production Name:{self.name}, Role:{self.role}'
 
-
 class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
@@ -74,18 +67,26 @@ class User(db.Model, SerializerMixin):
 
     # 4.✅ Add a column _password_hash
         # Note: When an underscore is used, it's a sign that the variable or method is for internal use.
+    _password_hash = db.Column(db.String)
    
     # 5.✅ Create a hybrid_property that will protect the hash from being viewed
+    @hybrid_property
+    def password_hash(self):
+        return self._password_hash
     
     # 6.✅ Navigate to app
   
     # 7.✅ Create a setter method called password_hash that takes self and a password.
         #7.1 Use bcyrpt to generate the password hash with bcrypt.generate_password_hash
         #7.2 Set the _password_hash to the hashed password
+    @password_hash.setter
+    def password_hash(self, password):
+        password_hash = bcrypt.generate_password_hash(password.encode('utf-8'))
+        self._password_hash = password_hash.decode('utf-8')
 
-
-
-     # 8.✅ Create an authenticate method that uses bcyrpt to verify the password against the hash in the DB with bcrypt.check_password_hash 
+     # 8.✅ Create an authenticate method that uses bcyrpt to verify the password against the hash in the DB with bcrypt.check_password_hash
+    def authenticate(self, password):
+        return bcrypt.check_password_hash(self._password_hash, password.encode('utf-8'))
 
      # 9.✅ Navigate to app
     def __repr__(self):

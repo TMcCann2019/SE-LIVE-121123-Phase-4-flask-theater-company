@@ -43,7 +43,6 @@ function Navigation({updateUser}) {
 
 export default Navigation
 
-
 const NavH1 = styled.h1`
 font-family: 'Splash', cursive;
 `

@@ -15,12 +15,17 @@ function App() {
 
   useEffect(() => {
     fetchUser()
-    fetchProductions()
   },[])
+
+  useEffect(() => {
+    fetchProductions()
+  }, [user])
 
   const fetchProductions = () => (
     fetch('/productions')
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        res.json()}})
     .then(setProductions)
   )
 
