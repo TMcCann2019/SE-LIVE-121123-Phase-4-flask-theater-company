@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>P4L5 - Authentication: IAM (Part 1)</title>
+  <title>P4L6 - REST API Authorization with Flask</title>
 
   <meta name="description" content="A framework for easily creating beautiful presentations using HTML">
   <meta name="author" content="Hakim El Hattab">
@@ -73,7 +73,7 @@
     
         <section >
             
-            <h2>Authentication with Flask</h2>
+            <h2>Authorization with Flask</h2>
 <p><img src="./flask-1.png" alt="flask-1"></p>
 
             </section>
@@ -86,10 +86,12 @@
             
             <h2>Learning Objectives</h2>
 <ul>
-<li>Understnd the Importance of Authentication in Web Apps</li>
-<li>Be able to differentiate between Identity Management (Authentication) and Access Management (Authorization)</li>
-<li>Identify Cookies and Sessions, and their relationship in the context of Authentication</li>
-<li>See how to implement Token-Based Authentication (Identity Management) Using Cookies and Sessions</li>
+<li class="fragment fade-up">Understand the dangers of plaintext passwords</li>
+<li class="fragment fade-up">Understand the concept of hashing</li>
+<li class="fragment fade-up">Differentiate between hashing and encryption</li>
+<li class="fragment fade-up">Know about rainbow tables</li>
+<li class="fragment fade-up">Understand the concept of salting</li>
+<li class="fragment fade-up">Be able to use the <code>bcrypt</code> library to hash passwords</li>
 </ul>
 
             </section>
@@ -100,8 +102,8 @@
     
         <section >
             
-            <h3>Authentication vs Authorization</h3>
-<p><img src="./office-auth-not-same.png" alt="office-auth-not-same"></p>
+            <h3>🚫 Storing Passwords as Plaintext is BAD 🚫</h3>
+<p><img src="./godaddy-breach.png" alt="godaddy-breach"></p>
 
             </section>
     
@@ -111,8 +113,9 @@
     
         <section >
             
-            <h3>Identity and Access Management</h3>
-<p><img src="./IM-AM-diff.png" alt="IM-AM-diff"></p>
+            <h3>Some breaches are bigger than others</h3>
+<p><img src="./dailyquiz-breach.png" alt="dailyquiz-breach"></p>
+<p class="fragment fade-up"><img src="./monster-breach.png" alt="monster-breach"></p>
 
             </section>
     
@@ -122,8 +125,8 @@
     
         <section >
             
-            <h3>The Club Analogy</h3>
-<p><img src="./wristband.jpg" alt="wristband"></p>
+            <h3>Even the big companies get it wrong</h3>
+<p><img src="./facebook-breach.png" alt="facebook-breach"></p>
 
             </section>
     
@@ -133,9 +136,8 @@
     
         <section >
             
-            <h2>The Stateless Protocol</h2>
-<p><img src="./fb-login.webp" alt="FB-login"></p>
-<p><a href="https://medium.com/@maheshlsingh8412/cookie-session-story-of-a-stateless-http-3cd09cc01541">Singh M., Cookie+Session (Medium)</a></p>
+            <h3>Hackers are paying attention</h3>
+<p><img src="./rockyou2021.png" alt="rockyou2021"></p>
 
             </section>
     
@@ -145,8 +147,8 @@
     
         <section >
             
-            <p><img src="./no-state-no-identity.webp" alt="no-state"></p>
-<p>Since HTTP is stateless, it does not know who you are. It does not know if you are the same person who logged in 5 minutes ago or if you are a new user.</p>
+            <h3>Protecting Passwords with Hashing</h3>
+<p><img src="./Hash-Algorithm.png" alt="Hash-Algorithm"></p>
 
             </section>
     
@@ -156,8 +158,8 @@
     
         <section >
             
-            <h5>Enter Cookies</h5>
-<p><img src="./cookies-user-data.png" alt="cookies-user-data"></p>
+            <h3>Hashing vs Encryption</h3>
+<p><img src="./Hashing-definition.jpg" alt="Hashing-definition"></p>
 
             </section>
     
@@ -167,9 +169,8 @@
     
         <section >
             
-            <p><img src="./set-cookie.webp" alt="set-cookie"></p>
-<h5>Cookies allow us to make the HTTP request-response protocol stateful</h5>
-<p><img src="./req-cookie.webp" alt="req-cookie"></p>
+            <h3>Hashing alone is not enough</h3>
+<p><img src="./rainbow-1.jpg" alt="rainbow-1"></p>
 
             </section>
     
@@ -179,8 +180,8 @@
     
         <section >
             
-            <h3>Contents of a Cookie</h3>
-<p><img src="./Website-cookies-imaging-with-description.jpg" alt="Website-Cookies"></p>
+            <h3>Salting</h3>
+<p><img src="./Hash-plus-Salt-1-1024x516.webp" alt="salting-and-hashing"></p>
 
             </section>
     
@@ -190,20 +191,9 @@
     
         <section >
             
-            <h5>Uses of Cookies</h5>
-<p><img src="./EL_Cookies_infographic.png" alt="EL_Cookies"></p>
-<h6 class="fragment">Let’s code! 💻</h6>
-
-            </section>
-    
-
-
-
-    
-        <section >
-            
-            <h3>Secure the Cookies 🔒 with Sessions</h3>
-<p><img src="./diagram-Web-Sessions.webp" alt="diagram-Web-Sessions"></p>
+            <h3>Salting with <code>bcrypt</code></h3>
+<p><img src="./bcrypt.png" alt="bcrypt"></p>
+<h4 class="fragment fade-up">Let’s dive into the code! 🤿</h4>
 
             </section>
     
